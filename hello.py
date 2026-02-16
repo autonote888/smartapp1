@@ -18,7 +18,7 @@ except:
     st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. CSS PERBAIKAN: LONJONG PRESISI & GLOW ---
+# --- 3. CSS MINIMALIS POLOS & LONJONG ---
 st.markdown("""
     <style>
     /* Sembunyikan Header & Footer Streamlit */
@@ -37,32 +37,31 @@ st.markdown("""
     @media (min-width: 800px) {
         .block-container {
             max-width: 450px !important;
-            border: 1px solid #f8fafc;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            border-radius: 40px;
-            margin-top: 40px !important;
-            padding: 50px !important;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border-radius: 30px;
+            margin-top: 50px !important;
+            padding: 40px !important;
         }
     }
 
-    /* FIX: MEMBUAT INPUT LONJONG SEMPURNA & PRESISI */
+    /* INPUT POLOSAN LONJONG */
     .stTextInput > div > div > input {
-        border-radius: 50px !important; /* Membuat lonjong sempurna */
-        padding: 15px 25px !important;  /* Jarak teks di dalam */
-        height: 60px !important;        /* Tinggi input agar terlihat kokoh */
-        border: 1px solid #e2e8f0 !important;
-        background-color: #ffffff !important;
+        border-radius: 50px !important; /* Lonjong Sempurna */
+        padding: 12px 25px !important;
+        height: 55px !important;
+        border: 1px solid #e2e8f0 !important; /* Garis tipis halus */
+        background-color: #f8fafc !important; /* Warna abu-abu sangat muda */
         color: #1e293b !important;
-        transition: all 0.3s ease-in-out !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
-        margin-bottom: 10px !important;
+        box-shadow: none !important; /* Tanpa bayangan/glow */
+        margin-bottom: 5px !important;
     }
     
-    /* Efek Menyala saat Klik (Focus) */
+    /* State saat diklik (Tetap Polos) */
     .stTextInput > div > div > input:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
+        border-color: #cbd5e1 !important; /* Sedikit lebih gelap saat diklik */
         outline: none !important;
+        box-shadow: none !important;
     }
 
     /* Styling Teks & Tombol */
@@ -77,37 +76,35 @@ st.markdown("""
     .akses-aman {
         background-color: #f1f5f9;
         color: #64748b;
-        padding: 10px 0;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 8px 0;
+        border-radius: 15px;
+        font-size: 11px;
         font-weight: bold;
-        letter-spacing: 2px;
-        margin: 25px 0;
+        letter-spacing: 1px;
+        margin: 20px 0;
         text-transform: uppercase;
     }
 
-    /* Tombol MASUK Navy Lonjong */
+    /* Tombol MASUK Polos Navy */
     div.stButton > button {
         width: 100% !important;
         border-radius: 50px !important;
-        height: 60px !important;
-        background: linear-gradient(135deg, #002855 0%, #001f3f 100%) !important;
+        height: 55px !important;
+        background-color: #001f3f !important; /* Navy Polos */
         color: white !important;
         font-weight: bold !important;
-        font-size: 16px !important;
         border: none !important;
-        box-shadow: 0 10px 20px rgba(0, 31, 63, 0.2) !important;
         margin-top: 15px !important;
     }
 
     .divider {
         display: flex; align-items: center; text-align: center;
-        color: #94a3b8; margin: 30px 0;
+        color: #94a3b8; margin: 25px 0;
     }
     .divider::before, .divider::after {
-        content: ''; flex: 1; border-bottom: 1px solid #e2e8f0;
+        content: ''; flex: 1; border-bottom: 1px solid #f1f5f9;
     }
-    .divider span { padding: 0 10px; font-size: 14px; }
+    .divider span { padding: 0 10px; font-size: 13px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -119,27 +116,26 @@ if not st.session_state.logged_in:
     # --- TAMPILAN LOGIN ---
     st.markdown("""
         <div class="main-container">
-            <div style="text-align: right; color: #002855; font-weight: bold; font-size: 14px;">EN | ID</div>
-            <div style="margin-top: 20px; margin-bottom: 10px;">
-                <img src="https://logowik.com/content/uploads/images/j-letter7715.logowik.com.webp" width="75">
+            <div style="text-align: right; color: #002855; font-weight: bold; font-size: 13px;">EN | ID</div>
+            <div style="margin-top: 15px; margin-bottom: 5px;">
+                <img src="https://logowik.com/content/uploads/images/j-letter7715.logowik.com.webp" width="65">
             </div>
             <div class="logo-text">JITU <span style="color:#d4af37">PRESISI</span></div>
             <div class="akses-aman">AKSES AMAN</div>
         </div>
     """, unsafe_allow_html=True)
 
-    # Input User (NRP & Password)
-    nip_user = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
-    pass_user = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
+    # Input NRP & Password
+    nip_u = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
+    pas_u = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
 
     # Link Lupa
-    st.markdown('<div style="text-align: right; margin-bottom: 5px;"><a href="#" style="color:#002855; font-weight:bold; text-decoration:none; font-size:14px;">Lupa?</a></div>', unsafe_allow_html=True)
+    st.markdown('<div style="text-align: right; margin-top: 5px;"><a href="#" style="color:#002855; font-weight:bold; text-decoration:none; font-size:13px;">Lupa?</a></div>', unsafe_allow_html=True)
 
     if st.button("MASUK"):
-        if nip_user and pass_user:
+        if nip_u and pas_u:
             try:
-                # Login menggunakan email/nip dan password
-                res = supabase.table("pegawai").select("*").eq("email", nip_user).eq("password", pass_user).execute()
+                res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
                     st.session_state.logged_in = True
@@ -149,27 +145,20 @@ if not st.session_state.logged_in:
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # Aksesoris Bawah
+    # Footer Aksesoris
     st.markdown("""
         <div class="divider"><span>atau</span></div>
         <div style="text-align:center;">
-            <button style="width:100%; border-radius:50px; padding:15px; border:1px solid #e2e8f0; background:white; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1e293b; font-family:sans-serif;">
-                <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="18" style="margin-right:10px;"> Google
+            <button style="width:100%; border-radius:50px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; color:#1e293b; font-family:sans-serif; cursor:pointer;">
+                <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="16" style="margin-right:8px; vertical-align:middle;"> Google
             </button>
-            <p style="margin-top:35px; color:#64748b; font-size:14px;">Baru? <b style="color:#002855;">Daftar</b></p>
+            <p style="margin-top:30px; color:#64748b; font-size:13px;">Baru? <b style="color:#002855;">Daftar</b></p>
         </div>
     """, unsafe_allow_html=True)
 else:
     # --- DASHBOARD SETELAH LOGIN ---
     u = st.session_state.user_info
-    st.markdown(f"""
-        <div class='main-container'>
-            <h3 style="color:#64748b;">Selamat Datang,</h3>
-            <h2 style="color:#002855; margin-top:-10px;">{u['nama_lengkap']}</h2>
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-        </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("Keluar"):
+    st.markdown(f"<div class='main-container'><h3>Selamat Datang,</h3><h2>{u['nama_lengkap']}</h2></div>", unsafe_allow_html=True)
+    if st.button("Logout"):
         st.session_state.logged_in = False
         st.rerun()
