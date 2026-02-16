@@ -15,10 +15,10 @@ try:
     KEY = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(URL, KEY)
 except:
-    st.error("Koneksi database gagal. Cek Secrets.")
+    st.error("Koneksi database gagal. Cek Secrets di Dashboard Streamlit.")
     st.stop()
 
-# --- 3. CSS MINIMALIS: TANPA GARIS TEPI (NO BORDER) ---
+# --- 3. CSS: LONJONG IDENTIK (PILL-SHAPED) ---
 st.markdown("""
     <style>
     /* Sembunyikan Header & Footer Streamlit */
@@ -29,42 +29,40 @@ st.markdown("""
     /* Background Putih Bersih */
     .stApp { background-color: #ffffff !important; }
 
-    /* Container Utama Responsif */
+    /* Pengaturan Kontainer Utama Responsif */
     .block-container {
         padding-top: 1rem !important;
     }
 
     @media (min-width: 800px) {
         .block-container {
-            max-width: 450px !important;
-            border-radius: 30px;
-            margin-top: 50px !important;
-            padding: 40px !important;
+            max-width: 420px !important;
+            margin-top: 30px !important;
+            padding: 20px !important;
         }
     }
 
-    /* INPUT POLOSAN: TANPA GARIS TEPI */
+    /* INPUT LONJONG IDENTIK DENGAN AKSES AMAN */
     .stTextInput > div > div > input {
-        border-radius: 50px !important; 
+        border-radius: 100px !important; /* Kelengkungan maksimal agar lonjong sempurna */
         padding: 12px 25px !important;
-        height: 55px !important;
-        border: none !important; /* MENGHILANGKAN GARIS TEPI */
-        background-color: #f1f5f9 !important; /* Abu-abu muda yang sedikit lebih tegas */
+        height: 50px !important; /* Tinggi disesuaikan agar proporsional */
+        border: none !important; 
+        background-color: #f1f5f9 !important; 
         color: #1e293b !important;
         box-shadow: none !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 10px !important;
     }
     
-    /* State saat diklik (Tetap Tanpa Garis) */
+    /* Fokus saat diklik */
     .stTextInput > div > div > input:focus {
         outline: none !important;
-        border: none !important;
-        box-shadow: 0 0 0 2px #e2e8f0 !important; /* Efek kedalaman tipis saat aktif */
-        background-color: #f8fafc !important;
+        background-color: #e2e8f0 !important;
     }
 
-    /* Styling Teks & Tombol */
+    /* Styling Teks Logo & Akses Aman */
     .main-container { text-align: center; font-family: 'sans-serif'; }
+    
     .logo-text {
         font-size: 26px;
         font-weight: 800;
@@ -72,28 +70,29 @@ st.markdown("""
         color: #002855;
         margin-top: 10px;
     }
+
     .akses-aman {
         background-color: #f1f5f9;
         color: #64748b;
-        padding: 8px 0;
-        border-radius: 15px;
+        padding: 12px 0;
+        border-radius: 100px; /* Sama persis dengan input */
         font-size: 11px;
         font-weight: bold;
-        letter-spacing: 1px;
-        margin: 20px 0;
+        letter-spacing: 2px;
+        margin: 25px 0;
         text-transform: uppercase;
     }
 
-    /* Tombol MASUK Navy Polos */
+    /* Tombol MASUK Navy Lonjong */
     div.stButton > button {
         width: 100% !important;
-        border-radius: 50px !important;
-        height: 55px !important;
+        border-radius: 100px !important;
+        height: 50px !important;
         background-color: #001f3f !important;
         color: white !important;
         font-weight: bold !important;
         border: none !important;
-        margin-top: 15px !important;
+        margin-top: 10px !important;
     }
 
     .divider {
@@ -145,11 +144,11 @@ if not st.session_state.logged_in:
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # Footer Aksesoris
+    # Footer
     st.markdown("""
         <div class="divider"><span>atau</span></div>
         <div style="text-align:center;">
-            <button style="width:100%; border-radius:50px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; color:#1e293b; font-family:sans-serif; cursor:pointer;">
+            <button style="width:100%; border-radius:100px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; color:#1e293b; font-family:sans-serif; cursor:pointer;">
                 <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="16" style="margin-right:8px; vertical-align:middle;"> Google
             </button>
             <p style="margin-top:30px; color:#64748b; font-size:13px;">Baru? <b style="color:#002855;">Daftar</b></p>
