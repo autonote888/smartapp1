@@ -4,7 +4,7 @@ from fpdf import FPDF
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="JITU PRESISI", 
+    page_title="JITU PRESISI MOBILE", 
     page_icon="🔵", 
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -19,10 +19,11 @@ except:
     st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. CSS: GLASSMORPHISM PREMIUM ---
+# --- 3. CSS: GLASSMORPHISM & HEADER CUSTOM ---
 st.markdown("""
     <style>
-    /* Background Gradasi Mewah */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;800&display=swap');
+
     .stApp {
         background: radial-gradient(circle at top right, #2e1065, #0f172a) !important;
         background-attachment: fixed;
@@ -37,24 +38,45 @@ st.markdown("""
         max-width: 450px !important;
     }
 
-    /* Logo J Box */
+    /* --- HEADER STYLING SESUAI INSTRUKSI --- */
+    .header-container {
+        text-align: center;
+        margin-bottom: 30px;
+        font-family: 'Inter', sans-serif;
+    }
+    .jitu-text {
+        font-size: 32px;
+        font-weight: 800; /* Font Tebal */
+        color: #001f3f; /* Dongker Gelap */
+        letter-spacing: 1px;
+    }
+    .presisi-text {
+        font-size: 32px;
+        font-weight: 200; /* Font Tipis */
+        color: #FF8C00; /* Orange */
+        letter-spacing: 1px;
+    }
+    .mobile-text {
+        display: block;
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 4px;
+        margin-top: -5px;
+        text-transform: uppercase;
+    }
+
     .logo-box {
         width: 60px; height: 60px;
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 15px;
         display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 20px auto;
+        margin: 0 auto 15px auto;
         font-size: 30px; font-weight: bold; color: white;
     }
 
-    .welcome-text {
-        text-align: center; color: white !important;
-        font-size: 28px !important; font-weight: 600 !important;
-        margin-bottom: 30px !important;
-    }
-
-    /* Input Glassmorphism */
+    /* Input & Button Styling */
     .stTextInput > div > div > input {
         background: rgba(255, 255, 255, 0.05) !important;
         backdrop-filter: blur(10px) !important;
@@ -64,7 +86,6 @@ st.markdown("""
         height: 55px !important;
     }
 
-    /* Tombol Gradasi Sunset */
     div.stButton > button {
         width: 100% !important; border-radius: 50px !important;
         height: 55px !important;
@@ -73,77 +94,48 @@ st.markdown("""
         border: none !important;
     }
 
-    /* Card Rincian Penghasilan */
     .data-card {
         background: rgba(255, 255, 255, 0.07);
         backdrop-filter: blur(15px);
-        border-radius: 20px;
-        padding: 20px;
+        border-radius: 20px; padding: 20px;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 15px;
-        color: white;
+        margin-bottom: 15px; color: white;
     }
 
-    .divider {
-        display: flex; align-items: center; text-align: center;
-        color: rgba(255, 255, 255, 0.3); margin: 25px 0;
-    }
-    .divider::before, .divider::after {
-        content: ''; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .divider span { padding: 0 10px; font-size: 14px; }
-
-    /* Social Buttons Spasi Presisi */
-    .social-container {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-    }
+    .social-container { display: flex; gap: 15px; justify-content: center; margin-top: 20px;}
     .social-btn {
-        flex: 1;
-        background: rgba(255, 255, 255, 0.05);
+        flex: 1; background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 12px;
-        text-align: center;
-        color: white;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 15px; padding: 12px;
+        text-align: center; color: white; font-size: 14px;
+        display: flex; align-items: center; justify-content: center;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. FUNGSI PDF ---
-def generate_pdf(user, financial):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "PUSKEU POLRI - SLIP GAJI", ln=True, align="C")
-    pdf.ln(10)
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, f"Nama: {user['nama_lengkap']}", ln=True)
-    pdf.cell(0, 10, f"Gaji Pokok: Rp {financial['gaji_pokok']:,.0f}", ln=True)
-    pdf.cell(0, 10, f"Tunkin: Rp {financial['jumlah_tunkin']:,.0f}", ln=True)
-    return pdf.output(dest='S').encode('latin-1')
-
-# --- 5. LOGIKA NAVIGASI ---
+# --- 4. LOGIKA NAVIGASI ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
     # --- UI LOGIN ---
     st.markdown('<div class="logo-box">J</div>', unsafe_allow_html=True)
-    st.markdown('<div class="welcome-text">Welcome to Jitu Presisi</div>', unsafe_allow_html=True)
+    
+    # Header sesuai permintaan Bapak
+    st.markdown("""
+        <div class="header-container">
+            <span class="jitu-text">JITU</span><span class="presisi-text"> PRESISI</span>
+            <span class="mobile-text">MOBILE</span>
+        </div>
+    """, unsafe_allow_html=True)
 
-    nip_u = st.text_input("Email / NRP", placeholder="Enter your ID")
-    pas_u = st.text_input("Password", type="password", placeholder="Enter your password")
+    nip_u = st.text_input("Email / NRP", placeholder="Enter your ID", label_visibility="collapsed")
+    pas_u = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
 
     if st.button("Log In"):
         if nip_u and pas_u:
             try:
-                # Login mengecek tabel 'pegawai'
+                # Cek tabel pegawai di Supabase
                 res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
@@ -154,9 +146,7 @@ if not st.session_state.logged_in:
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    st.markdown('<div class="divider"><span>Or</span></div>', unsafe_allow_html=True)
-    
-    # TOMBOL SOSIAL DENGAN IKON MEWAH
+    # Social Login
     st.markdown("""
         <div class="social-container">
             <div class="social-btn">
@@ -168,23 +158,19 @@ if not st.session_state.logged_in:
         </div>
     """, unsafe_allow_html=True)
 else:
-    # --- DASHBOARD: DATA KEUANGAN ---
+    # --- DASHBOARD SETELAH LOGIN ---
     u = st.session_state.user_info
     st.markdown(f"<h2 style='color:white; text-align:center;'>Halo, {u['nama_lengkap']}</h2>", unsafe_allow_html=True)
     
     try:
-        # Ambil data dari tabel 'tunkin'
+        # Menampilkan data tunkin
         res_uang = supabase.table("tunkin").select("*").eq("nrp_nip", u["nrp_nip"]).execute()
         if len(res_uang.data) > 0:
             d = res_uang.data[0]
             st.markdown(f'<div class="data-card"><small>Gaji Pokok</small><h3>Rp {d["gaji_pokok"]:,.0f}</h3></div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="data-card"><small>Tunkin</small><h3>Rp {d["jumlah_tunkin"]:,.0f}</h3></div>', unsafe_allow_html=True)
-            
-            # Tombol Cetak Slip
-            pdf_bytes = generate_pdf(u, d)
-            st.download_button("📄 DOWNLOAD SLIP GAJI", pdf_bytes, f"Slip_{u['nrp_nip']}.pdf", "application/pdf")
+            st.markdown(f'<div class="data-card"><small>Tunjangan Kinerja</small><h3>Rp {d["jumlah_tunkin"]:,.0f}</h3></div>', unsafe_allow_html=True)
     except:
-        st.error("Gagal memuat data penghasilan.")
+        st.error("Data tidak ditemukan.")
 
     if st.button("Log Out"):
         st.session_state.logged_in = False
