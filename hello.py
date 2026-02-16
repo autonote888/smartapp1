@@ -18,12 +18,12 @@ except:
     st.error("Koneksi database gagal.")
     st.stop()
 
-# --- 3. CSS CUSTOM: CLEAN MINIMALIST (Badi Style) ---
+# --- 3. CSS CUSTOM: CLEAN MINIMALIST ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
-    /* 1. Background Biru Muda Sangat Lembut */
+    /* Background Biru Muda Lembut */
     .stApp {
         background-color: #f0f4f8 !important; 
     }
@@ -33,18 +33,11 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
 
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 3rem !important;
         max-width: 450px !important;
     }
 
-    /* 2. Logo Center Styling */
-    .stImage {
-        display: flex;
-        justify-content: center;
-        margin-bottom: -10px !important;
-    }
-
-    /* 3. Header Styling */
+    /* Header Text Styling */
     .header-container {
         text-align: center;
         margin-bottom: 25px;
@@ -52,13 +45,14 @@ st.markdown("""
     }
     .jitu-text { font-size: 32px; font-weight: 800; color: #001f3f; }
     .presisi-text { font-size: 32px; font-weight: 300; color: #FF8C00; }
-    .mobile-text { display: block; font-size: 14px; color: #94a3b8; letter-spacing: 4px; margin-top: -5px; }
+    .mobile-text { display: block; font-size: 14px; color: #94a3b8; letter-spacing: 4px; margin-top: -5px; text-transform: uppercase; }
 
     .sub-welcome {
         text-align: center;
         color: #1e293b;
         font-size: 22px;
         font-weight: 700;
+        margin-top: 10px;
         margin-bottom: 5px;
         font-family: 'Inter', sans-serif;
     }
@@ -69,12 +63,12 @@ st.markdown("""
         margin-bottom: 30px;
     }
 
-    /* 4. Input Field: Putih Bersih Pill-Shaped */
+    /* Input Field: Putih Bersih Pill-Shaped */
     div[data-baseweb="input"] {
         width: 100% !important;
         border-radius: 100px !important;
         border: none !important;
-        background-color: #ffffff !important; /* Putih Bersih */
+        background-color: #ffffff !important; 
         height: 55px !important;
         box-shadow: 0 2px 5px rgba(0,0,0,0.02) !important;
     }
@@ -86,24 +80,20 @@ st.markdown("""
         padding: 0 25px !important;
     }
 
-    /* 5. Tombol Log In Biru Solid */
+    /* Tombol Log In Biru Solid */
     div.stButton > button {
         width: 100% !important; 
         border-radius: 100px !important;
         height: 55px !important;
-        background-color: #3197e8 !important; /* Biru Cerulean Solid */
+        background-color: #3197e8 !important; 
         color: #ffffff !important; 
         font-weight: 600 !important;
         font-size: 16px !important;
         border: none !important;
         margin-top: 10px !important;
-        transition: 0.3s;
-    }
-    div.stButton > button:hover {
-        background-color: #2576b9 !important;
     }
 
-    /* 6. Social Buttons: Putih & Panjang */
+    /* Social Buttons: Menumpuk ke Bawah */
     .social-btn-full {
         background-color: #ffffff;
         border-radius: 100px;
@@ -117,7 +107,6 @@ st.markdown("""
         font-size: 14px;
         font-weight: 500;
         font-family: 'Inter', sans-serif;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .divider {
@@ -143,15 +132,7 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # Logo jitu.png
-    col_l1, col_l2, col_l3 = st.columns([1, 1.5, 1])
-    with col_l2:
-        try:
-            st.image("jitu.png", width=90)
-        except:
-            st.markdown('<div style="text-align:center; font-size:30px; color:#3197e8; font-weight:800;">JITU</div>', unsafe_allow_html=True)
-
-    # Header
+    # Header Teks Langsung
     st.markdown("""
         <div class="header-container">
             <span class="jitu-text">JITU</span><span class="presisi-text"> PRESISI</span>
@@ -161,11 +142,9 @@ if not st.session_state.logged_in:
         <div class="sub-text">Access your personalized performance dashboard</div>
     """, unsafe_allow_html=True)
 
-    # Input NRP & Password
-    nip_u = st.text_input("Email", placeholder="Enter your NRP / NIP", label_visibility="collapsed")
+    nip_u = st.text_input("NIP", placeholder="Enter your NRP / NIP", label_visibility="collapsed")
     pas_u = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
 
-    # Tombol Log In
     if st.button("Log in"):
         if nip_u and pas_u:
             try:
@@ -177,12 +156,10 @@ if not st.session_state.logged_in:
                 else:
                     st.error("Invalid credentials.")
             except:
-                st.error("Connection error.")
+                st.error("Database connection failed.")
 
-    # Divider
     st.markdown('<div class="divider"><span>Or continue with</span></div>', unsafe_allow_html=True)
 
-    # Social Login (Stacked/Menumpuk sesuai desain baru)
     st.markdown("""
         <div class="social-btn-full">
             <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="20" style="margin-right:12px;"> Sign up with Google
@@ -196,9 +173,9 @@ if not st.session_state.logged_in:
     """, unsafe_allow_html=True)
 
 else:
-    # DASHBOARD
+    # --- DASHBOARD ---
     u = st.session_state.user_info
-    st.markdown(f"<div style='text-align:center;'><h2>Welcome, {u['nama_lengkap']}</h2></div>", unsafe_allow_html=True)
+    st.markdown(f"### Welcome, {u['nama_lengkap']}")
     if st.button("Log Out"):
         st.session_state.logged_in = False
         st.rerun()
