@@ -18,7 +18,7 @@ except:
     st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. CSS MINIMALIS POLOS & LONJONG ---
+# --- 3. CSS MINIMALIS: TANPA GARIS TEPI (NO BORDER) ---
 st.markdown("""
     <style>
     /* Sembunyikan Header & Footer Streamlit */
@@ -37,31 +37,30 @@ st.markdown("""
     @media (min-width: 800px) {
         .block-container {
             max-width: 450px !important;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border-radius: 30px;
             margin-top: 50px !important;
             padding: 40px !important;
         }
     }
 
-    /* INPUT POLOSAN LONJONG */
+    /* INPUT POLOSAN: TANPA GARIS TEPI */
     .stTextInput > div > div > input {
-        border-radius: 50px !important; /* Lonjong Sempurna */
+        border-radius: 50px !important; 
         padding: 12px 25px !important;
         height: 55px !important;
-        border: 1px solid #e2e8f0 !important; /* Garis tipis halus */
-        background-color: #f8fafc !important; /* Warna abu-abu sangat muda */
+        border: none !important; /* MENGHILANGKAN GARIS TEPI */
+        background-color: #f1f5f9 !important; /* Abu-abu muda yang sedikit lebih tegas */
         color: #1e293b !important;
-        box-shadow: none !important; /* Tanpa bayangan/glow */
+        box-shadow: none !important;
         margin-bottom: 5px !important;
     }
     
-    /* State saat diklik (Tetap Polos) */
+    /* State saat diklik (Tetap Tanpa Garis) */
     .stTextInput > div > div > input:focus {
-        border-color: #cbd5e1 !important; /* Sedikit lebih gelap saat diklik */
         outline: none !important;
-        box-shadow: none !important;
+        border: none !important;
+        box-shadow: 0 0 0 2px #e2e8f0 !important; /* Efek kedalaman tipis saat aktif */
+        background-color: #f8fafc !important;
     }
 
     /* Styling Teks & Tombol */
@@ -85,12 +84,12 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Tombol MASUK Polos Navy */
+    /* Tombol MASUK Navy Polos */
     div.stButton > button {
         width: 100% !important;
         border-radius: 50px !important;
         height: 55px !important;
-        background-color: #001f3f !important; /* Navy Polos */
+        background-color: #001f3f !important;
         color: white !important;
         font-weight: bold !important;
         border: none !important;
@@ -135,6 +134,7 @@ if not st.session_state.logged_in:
     if st.button("MASUK"):
         if nip_u and pas_u:
             try:
+                # Login menggunakan email/nip dan password
                 res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
