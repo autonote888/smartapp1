@@ -18,11 +18,12 @@ except:
     st.error("Koneksi database gagal.")
     st.stop()
 
-# --- 3. CSS CUSTOM: SNOW WHITE & LOGO STYLING ---
+# --- 3. CSS CUSTOM: SNOW WHITE & LOGO CENTER ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;800&display=swap');
 
+    /* Background Utama Putih Salju */
     .stApp {
         background-color: #FFFAFA !important; 
     }
@@ -32,19 +33,15 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
 
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 1.5rem !important;
         max-width: 450px !important;
     }
 
-    /* Container untuk Logo Gambar */
-    .logo-container {
+    /* Memastikan Logo Berada di Tengah */
+    .stImage {
         display: flex;
         justify-content: center;
-        margin-bottom: 10px;
-    }
-    .logo-img {
-        width: 80px; /* Bapak bisa sesuaikan ukurannya di sini */
-        height: auto;
+        margin-bottom: 0px !important;
     }
 
     /* Header Text Styling */
@@ -55,7 +52,7 @@ st.markdown("""
     }
     .jitu-text { font-size: 32px; font-weight: 800; color: #001f3f; }
     .presisi-text { font-size: 32px; font-weight: 200; color: #FF8C00; }
-    .mobile-text { display: block; font-size: 14px; color: #94a3b8; letter-spacing: 4px; margin-top: -5px; }
+    .mobile-text { display: block; font-size: 14px; color: #94a3b8; letter-spacing: 4px; margin-top: -5px; text-transform: uppercase; }
 
     /* Input Field Styling */
     div[data-baseweb="input"] {
@@ -64,6 +61,7 @@ st.markdown("""
         border: 1px solid #e2e8f0 !important;
         background-color: #f8fafc !important;
         height: 55px !important;
+        margin-bottom: 5px;
     }
 
     .stTextInput input {
@@ -82,7 +80,7 @@ st.markdown("""
         color: #1e293b !important; 
         font-weight: 700 !important;
         border: none !important;
-        margin-top: 20px !important;
+        margin-top: 15px !important;
     }
 
     /* Social Buttons */
@@ -101,15 +99,14 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # --- MENAMPILKAN LOGO jitu.png ---
-    try:
-        # Menampilkan logo di tengah menggunakan container CSS
-        st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-        st.image("jitu.png", width=80)
-        st.markdown('</div>', unsafe_allow_html=True)
-    except:
-        # Jika file jitu.png belum ada di folder, tampilkan placeholder huruf J
-        st.markdown('<div style="text-align:center; font-size:40px; font-weight:bold; color:#001f3f;">J</div>', unsafe_allow_html=True)
+    # --- MENAMPILKAN LOGO jitu.png DI TENGAH ---
+    # Menggunakan kolom untuk centering tambahan agar kualitas gambar terjaga
+    col_logo_1, col_logo_2, col_logo_3 = st.columns([1, 2, 1])
+    with col_logo_2:
+        try:
+            st.image("jitu.png", width=100)
+        except:
+            st.markdown('<div style="text-align:center; font-size:40px; font-weight:bold; color:#001f3f;">J</div>', unsafe_allow_html=True)
 
     # Header Teks
     st.markdown("""
@@ -125,6 +122,7 @@ if not st.session_state.logged_in:
     if st.button("Log In"):
         if nip_u and pas_u:
             try:
+                # Login ke Supabase
                 res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
@@ -133,7 +131,7 @@ if not st.session_state.logged_in:
                 else:
                     st.error("NIP atau Password salah!")
             except Exception as e:
-                st.error("Gagal Login. Periksa Database.")
+                st.error("Terjadi kesalahan koneksi.")
 
     # Footer Social Login
     st.markdown("""
@@ -143,7 +141,9 @@ if not st.session_state.logged_in:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown(f"### Halo, {st.session_state.user_info['nama_lengkap']}")
+    # DASHBOARD SEDERHANA
+    u = st.session_state.user_info
+    st.markdown(f"### Selamat Datang, {u['nama_lengkap']}")
     if st.button("Log Out"):
         st.session_state.logged_in = False
         st.rerun()
