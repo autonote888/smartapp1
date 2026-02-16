@@ -15,21 +15,20 @@ try:
     KEY = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(URL, KEY)
 except:
-    st.error("Koneksi database gagal. Cek Secrets di Dashboard Streamlit.")
+    st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. CSS: LONJONG IDENTIK (PILL-SHAPED) ---
+# --- 3. CSS: PILL-SHAPED POLOS (MINIMALIS) ---
 st.markdown("""
     <style>
-    /* Sembunyikan Header & Footer Streamlit */
+    /* Sembunyikan Elemen Bawaan Streamlit */
     header {visibility: hidden;}
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
 
-    /* Background Putih Bersih */
     .stApp { background-color: #ffffff !important; }
 
-    /* Pengaturan Kontainer Utama Responsif */
+    /* Pengaturan Kontainer Utama */
     .block-container {
         padding-top: 1rem !important;
     }
@@ -38,31 +37,29 @@ st.markdown("""
         .block-container {
             max-width: 420px !important;
             margin-top: 30px !important;
-            padding: 20px !important;
         }
     }
 
-    /* INPUT LONJONG IDENTIK DENGAN AKSES AMAN */
+    /* INPUT PILL-SHAPED POLOS (TANPA BORDER / GLOW) */
     .stTextInput > div > div > input {
-        border-radius: 100px !important; /* Kelengkungan maksimal agar lonjong sempurna */
+        border-radius: 100px !important; /* Bentuk Pil Sempurna */
         padding: 12px 25px !important;
-        height: 50px !important; /* Tinggi disesuaikan agar proporsional */
-        border: none !important; 
-        background-color: #f1f5f9 !important; 
+        height: 50px !important;
+        border: none !important; /* Polos Tanpa Garis Tepi */
+        background-color: #f1f5f9 !important; /* Abu-abu muda bersih */
         color: #1e293b !important;
-        box-shadow: none !important;
+        box-shadow: none !important; /* Tanpa Bayangan Menyala */
         margin-bottom: 10px !important;
     }
     
-    /* Fokus saat diklik */
+    /* State Fokus (Tetap Polos) */
     .stTextInput > div > div > input:focus {
         outline: none !important;
-        background-color: #e2e8f0 !important;
+        background-color: #e2e8f0 !important; /* Sedikit lebih gelap saat diklik */
     }
 
-    /* Styling Teks Logo & Akses Aman */
+    /* Branding & Bar Akses Aman */
     .main-container { text-align: center; font-family: 'sans-serif'; }
-    
     .logo-text {
         font-size: 26px;
         font-weight: 800;
@@ -70,12 +67,11 @@ st.markdown("""
         color: #002855;
         margin-top: 10px;
     }
-
     .akses-aman {
         background-color: #f1f5f9;
         color: #64748b;
         padding: 12px 0;
-        border-radius: 100px; /* Sama persis dengan input */
+        border-radius: 100px; /* Bentuk Pil Identik */
         font-size: 11px;
         font-weight: bold;
         letter-spacing: 2px;
@@ -83,7 +79,7 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Tombol MASUK Navy Lonjong */
+    /* Tombol MASUK Pill-Shaped Navy */
     div.stButton > button {
         width: 100% !important;
         border-radius: 100px !important;
@@ -93,6 +89,7 @@ st.markdown("""
         font-weight: bold !important;
         border: none !important;
         margin-top: 10px !important;
+        box-shadow: none !important;
     }
 
     .divider {
@@ -106,12 +103,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. LOGIKA HALAMAN ---
+# --- 4. LOGIKA LOGIN ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # --- TAMPILAN LOGIN ---
+    # TAMPILAN LOGIN
     st.markdown("""
         <div class="main-container">
             <div style="text-align: right; color: #002855; font-weight: bold; font-size: 13px;">EN | ID</div>
@@ -123,17 +120,15 @@ if not st.session_state.logged_in:
         </div>
     """, unsafe_allow_html=True)
 
-    # Input NRP & Password
     nip_u = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
     pas_u = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
 
-    # Link Lupa
     st.markdown('<div style="text-align: right; margin-top: 5px;"><a href="#" style="color:#002855; font-weight:bold; text-decoration:none; font-size:13px;">Lupa?</a></div>', unsafe_allow_html=True)
 
     if st.button("MASUK"):
         if nip_u and pas_u:
             try:
-                # Login menggunakan email/nip dan password
+                # Cek database Supabase
                 res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
@@ -144,18 +139,18 @@ if not st.session_state.logged_in:
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # Footer
+    # Footer Login
     st.markdown("""
         <div class="divider"><span>atau</span></div>
         <div style="text-align:center;">
-            <button style="width:100%; border-radius:100px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; color:#1e293b; font-family:sans-serif; cursor:pointer;">
+            <button style="width:100%; border-radius:100px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; color:#1e293b; cursor:pointer;">
                 <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="16" style="margin-right:8px; vertical-align:middle;"> Google
             </button>
             <p style="margin-top:30px; color:#64748b; font-size:13px;">Baru? <b style="color:#002855;">Daftar</b></p>
         </div>
     """, unsafe_allow_html=True)
 else:
-    # --- DASHBOARD SETELAH LOGIN ---
+    # DASHBOARD
     u = st.session_state.user_info
     st.markdown(f"<div class='main-container'><h3>Selamat Datang,</h3><h2>{u['nama_lengkap']}</h2></div>", unsafe_allow_html=True)
     if st.button("Logout"):
