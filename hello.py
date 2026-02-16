@@ -18,7 +18,7 @@ except:
     st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. CSS PREMIUM: GLOW & ROUNDED UI ---
+# --- 3. CSS PERBAIKAN: LONJONG PRESISI & GLOW ---
 st.markdown("""
     <style>
     /* Sembunyikan Header & Footer Streamlit */
@@ -29,7 +29,7 @@ st.markdown("""
     /* Background Putih Bersih */
     .stApp { background-color: #ffffff !important; }
 
-    /* Pengaturan Kontainer Utama agar Responsif */
+    /* Container Utama Responsif */
     .block-container {
         padding-top: 1rem !important;
     }
@@ -45,21 +45,23 @@ st.markdown("""
         }
     }
 
-    /* Input Box Lonjong & Efek Menyala (Glow) */
-    .stTextInput input {
-        border-radius: 50px !important; /* Lonjong Sempurna */
-        padding: 25px 25px !important;
+    /* FIX: MEMBUAT INPUT LONJONG SEMPURNA & PRESISI */
+    .stTextInput > div > div > input {
+        border-radius: 50px !important; /* Membuat lonjong sempurna */
+        padding: 15px 25px !important;  /* Jarak teks di dalam */
+        height: 60px !important;        /* Tinggi input agar terlihat kokoh */
         border: 1px solid #e2e8f0 !important;
         background-color: #ffffff !important;
         color: #1e293b !important;
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        transition: all 0.3s ease-in-out !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
+        margin-bottom: 10px !important;
     }
     
     /* Efek Menyala saat Klik (Focus) */
-    .stTextInput input:focus {
+    .stTextInput > div > div > input:focus {
         border-color: #3b82f6 !important;
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important; /* Cahaya Biru Menyala */
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
         outline: none !important;
     }
 
@@ -84,22 +86,18 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Tombol MASUK Navy Berkilau */
+    /* Tombol MASUK Navy Lonjong */
     div.stButton > button {
-        width: 100%;
-        border-radius: 50px;
-        height: 3.8em;
+        width: 100% !important;
+        border-radius: 50px !important;
+        height: 60px !important;
         background: linear-gradient(135deg, #002855 0%, #001f3f 100%) !important;
         color: white !important;
-        font-weight: bold;
-        font-size: 16px;
-        border: none;
-        box-shadow: 0 10px 20px rgba(0, 31, 63, 0.2);
-        transition: 0.3s;
-    }
-    div.stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 25px rgba(0, 31, 63, 0.3);
+        font-weight: bold !important;
+        font-size: 16px !important;
+        border: none !important;
+        box-shadow: 0 10px 20px rgba(0, 31, 63, 0.2) !important;
+        margin-top: 15px !important;
     }
 
     .divider {
@@ -118,7 +116,7 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # --- TAMPILAN LOGIN (FULL ANDROID LOOK) ---
+    # --- TAMPILAN LOGIN ---
     st.markdown("""
         <div class="main-container">
             <div style="text-align: right; color: #002855; font-weight: bold; font-size: 14px;">EN | ID</div>
@@ -130,16 +128,17 @@ if not st.session_state.logged_in:
         </div>
     """, unsafe_allow_html=True)
 
-    # Input User
+    # Input User (NRP & Password)
     nip_user = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
     pass_user = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
 
     # Link Lupa
-    st.markdown('<div style="text-align: right; margin-bottom: 25px;"><a href="#" style="color:#002855; font-weight:bold; text-decoration:none; font-size:14px;">Lupa?</a></div>', unsafe_allow_html=True)
+    st.markdown('<div style="text-align: right; margin-bottom: 5px;"><a href="#" style="color:#002855; font-weight:bold; text-decoration:none; font-size:14px;">Lupa?</a></div>', unsafe_allow_html=True)
 
     if st.button("MASUK"):
         if nip_user and pass_user:
             try:
+                # Login menggunakan email/nip dan password
                 res = supabase.table("pegawai").select("*").eq("email", nip_user).eq("password", pass_user).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
@@ -154,7 +153,7 @@ if not st.session_state.logged_in:
     st.markdown("""
         <div class="divider"><span>atau</span></div>
         <div style="text-align:center;">
-            <button style="width:100%; border-radius:50px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <button style="width:100%; border-radius:50px; padding:15px; border:1px solid #e2e8f0; background:white; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1e293b; font-family:sans-serif;">
                 <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="18" style="margin-right:10px;"> Google
             </button>
             <p style="margin-top:35px; color:#64748b; font-size:14px;">Baru? <b style="color:#002855;">Daftar</b></p>
