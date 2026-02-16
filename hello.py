@@ -1,7 +1,6 @@
 import streamlit as st
 from supabase import create_client, Client
 from fpdf import FPDF
-import base64
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
@@ -20,133 +19,175 @@ except:
     st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. FUNGSI CETAK PDF ---
-def generate_slip_pdf(user, payroll):
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Header
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "PUSKEU POLRI - JITU PRESISI", ln=True, align="C")
-    pdf.set_font("Arial", "", 10)
-    pdf.cell(0, 5, "SLIP GAJI & TUNJANGAN KINERJA DIGITAL", ln=True, align="C")
-    pdf.line(10, 30, 200, 30)
-    pdf.ln(10)
-    
-    # Data Pegawai
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, f"NAMA: {user['nama_lengkap']}", ln=True)
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, f"NRP/NIP: {user['nrp_nip']}", ln=True)
-    pdf.cell(0, 10, f"JABATAN: {user['jabatan']}", ln=True)
-    pdf.ln(5)
-    
-    # Rincian Keuangan
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(100, 10, "RINCIAN", 1)
-    pdf.cell(0, 10, "JUMLAH (RP)", 1, ln=True)
-    
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(100, 10, "Gaji Pokok", 1)
-    pdf.cell(0, 10, f"{payroll['gaji_pokok']:,.0f}", 1, ln=True)
-    pdf.cell(100, 10, "Tunjangan Kinerja", 1)
-    pdf.cell(0, 10, f"{payroll['jumlah_tunkin']:,.0f}", 1, ln=True)
-    
-    pdf.set_font("Arial", "B", 12)
-    total = payroll['gaji_pokok'] + payroll['jumlah_tunkin']
-    pdf.cell(100, 10, "TOTAL PENERIMAAN", 1)
-    pdf.cell(0, 10, f"{total:,.0f}", 1, ln=True)
-    
-    return pdf.output(dest='S').encode('latin-1')
-
-# --- 4. CSS PREMIUM GLASS UI ---
+# --- 3. CSS: GLASSMORPHISM PREMIUM LOOK ---
 st.markdown("""
     <style>
-    .stApp { background: radial-gradient(circle at top right, #2e1065, #0f172a) !important; background-attachment: fixed; }
-    header {visibility: hidden;} footer {visibility: hidden;}
-    
+    /* Background Gradasi Gelap ala iOS/Notes */
+    .stApp {
+        background: radial-gradient(circle at top right, #2e1065, #0f172a) !important;
+        background-attachment: fixed;
+    }
+
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    #MainMenu {visibility: hidden;}
+
+    /* Container Center */
+    .block-container {
+        padding-top: 2rem !important;
+        max-width: 450px !important;
+    }
+
+    /* Logo J Box */
+    .logo-box {
+        width: 60px; height: 60px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px auto;
+        font-size: 30px; font-weight: bold; color: white;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    /* Teks Welcome */
+    .welcome-text {
+        text-align: center; color: white !important;
+        font-size: 28px !important; font-weight: 600 !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* Input Field Glassmorphism */
+    .stTextInput label { color: rgba(255, 255, 255, 0.7) !important; }
     .stTextInput > div > div > input {
-        border-radius: 100px !important; background: rgba(255, 255, 255, 0.05) !important;
-        border: none !important; color: white !important; height: 50px !important; padding: 0 25px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 15px !important;
+        color: white !important;
+        height: 55px !important;
     }
-    
-    .card {
-        background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px);
-        border-radius: 25px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
-        color: white; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    
+
+    /* Tombol Login Gradasi (Sunset Glow) */
     div.stButton > button {
-        width: 100% !important; border-radius: 100px !important; height: 50px !important;
+        width: 100% !important; border-radius: 50px !important;
+        height: 55px !important;
         background: linear-gradient(90deg, #a5b4fc 0%, #fdba74 100%) !important;
-        color: #1e293b !important; font-weight: bold !important; border: none !important;
+        color: #1e293b !important; font-weight: 700 !important;
+        border: none !important; margin-top: 20px !important;
+    }
+
+    /* Card Data Keuangan (Glass Look) */
+    .data-card {
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 15px;
+        color: white;
+    }
+
+    .divider {
+        display: flex; align-items: center; text-align: center;
+        color: rgba(255, 255, 255, 0.3); margin: 25px 0;
+    }
+    .divider::before, .divider::after {
+        content: ''; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .divider span { padding: 0 10px; font-size: 14px; }
+
+    .social-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px; padding: 12px;
+        text-align: center; color: white; font-size: 14px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 5. LOGIKA APLIKASI ---
+# --- 4. FUNGSI PDF ---
+def generate_pdf(user, financial):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "PUSKEU POLRI - RINCIAN PENGHASILAN", ln=True, align="C")
+    pdf.ln(10)
+    pdf.set_font("Arial", "", 12)
+    pdf.cell(0, 10, f"Nama: {user['nama_lengkap']}", ln=True)
+    pdf.cell(0, 10, f"NRP/NIP: {user['nrp_nip']}", ln=True)
+    pdf.cell(0, 10, f"Gaji Pokok: Rp {financial['gaji_pokok']:,.0f}", ln=True)
+    pdf.cell(0, 10, f"Tunjangan Kinerja: Rp {financial['jumlah_tunkin']:,.0f}", ln=True)
+    return pdf.output(dest='S').encode('latin-1')
+
+# --- 5. LOGIKA NAVIGASI ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # --- UI LOGIN ---
-    st.markdown("<div style='text-align:center; margin-bottom:30px;'><h1 style='color:white;'>JITU PRESISI</h1></div>", unsafe_allow_html=True)
-    nip_u = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
-    pas_u = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
-    
-    if st.button("Masuk Ke Sistem"):
+    # --- UI LOGIN (DESAIN ASLI BAPAK) ---
+    st.markdown('<div class="logo-box">J</div>', unsafe_allow_html=True)
+    st.markdown('<div class="welcome-text">Welcome to Jitu Presisi</div>', unsafe_allow_html=True)
+
+    nip_u = st.text_input("Email / NRP", placeholder="Enter your ID")
+    pas_u = st.text_input("Password", type="password", placeholder="Enter your password")
+
+    if st.button("Log In"):
         if nip_u and pas_u:
-            res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
-            if len(res.data) > 0:
-                st.session_state.user_info = res.data[0]
-                st.session_state.logged_in = True
-                st.rerun()
-            else:
-                st.error("NIP atau Password salah!")
+            try:
+                res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
+                if len(res.data) > 0:
+                    st.session_state.user_info = res.data[0]
+                    st.session_state.logged_in = True
+                    st.rerun()
+                else:
+                    st.error("Invalid ID or Password")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+    st.markdown('<div class="divider"><span>Or</span></div>', unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1: st.markdown('<div class="social-btn">Google</div>', unsafe_allow_html=True)
+    with c2: st.markdown('<div class="social-btn">Apple</div>', unsafe_allow_html=True)
 else:
-    # --- DASHBOARD RINCIAN PENGHASILAN ---
+    # --- DASHBOARD: MUNCUL RINCIAN DATA (GLASS UI) ---
     u = st.session_state.user_info
-    
-    st.markdown(f"<h3 style='color:white; margin-bottom:0;'>Halo, {u['nama_lengkap']}</h3>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:rgba(255,255,255,0.6); margin-top:0;'>NRP/NIP: {u['nrp_nip']} | {u['jabatan']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:white; text-align:center;'>Halo, {u['nama_lengkap']}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:rgba(255,255,255,0.6); text-align:center;'>{u['nrp_nip']} | {u['jabatan']}</p>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
     try:
-        # Ambil data dari tabel 'tunkin'
-        data_uang = supabase.table("tunkin").select("*").eq("nrp_nip", u["nrp_nip"]).execute()
-        
-        if len(data_uang.data) > 0:
-            uang = data_uang.data[0]
+        # Ambil rincian uang dari tabel tunkin
+        res_uang = supabase.table("tunkin").select("*").eq("nrp_nip", u["nrp_nip"]).execute()
+        if len(res_uang.data) > 0:
+            d = res_uang.data[0]
             
-            # Tampilan Card Rincian
+            # Tampilan Card Data Keuangan
             st.markdown(f"""
-                <div class="card">
-                    <small style="color:rgba(255,255,255,0.5);">Tunjangan Kinerja (Tunkin)</small>
-                    <h2 style="margin:5px 0;">Rp {uang['jumlah_tunkin']:,.0f}</h2>
-                    <span style="background:rgba(255,255,255,0.1); padding:2px 10px; border-radius:10px; font-size:12px;">{uang['status_bayar']}</span>
-                </div>
-                <div class="card">
+                <div class="data-card">
                     <small style="color:rgba(255,255,255,0.5);">Gaji Pokok</small>
-                    <h2 style="margin:5px 0;">Rp {uang['gaji_pokok']:,.0f}</h2>
+                    <h3 style="margin:0;">Rp {d['gaji_pokok']:,.0f}</h3>
+                </div>
+                <div class="data-card">
+                    <small style="color:rgba(255,255,255,0.5);">Tunjangan Kinerja (Tunkin)</small>
+                    <h3 style="margin:0;">Rp {d['jumlah_tunkin']:,.0f}</h3>
                 </div>
             """, unsafe_allow_html=True)
             
-            # Persiapan Tombol PDF
-            pdf_data = generate_slip_pdf(u, uang)
+            # Tombol Download PDF (Tetap dengan style tombol Bapak)
+            pdf_bytes = generate_pdf(u, d)
             st.download_button(
-                label="📄 DOWNLOAD SLIP GAJI (PDF)",
-                data=pdf_data,
-                file_name=f"Slip_Gaji_{u['nrp_nip']}.pdf",
+                label="📄 DOWNLOAD SLIP GAJI",
+                data=pdf_bytes,
+                file_name=f"Slip_{u['nrp_nip']}.pdf",
                 mime="application/pdf"
             )
-            
         else:
-            st.warning("Rincian penghasilan belum tersedia di tabel 'tunkin'.")
+            st.warning("Data rincian penghasilan belum tersedia.")
     except:
-        st.error("Gagal menarik data penghasilan. Cek koneksi Supabase.")
+        st.error("Gagal mengambil rincian data keuangan.")
 
-    st.write("<br>", unsafe_allow_html=True)
-    if st.button("Keluar"):
+    if st.button("Log Out"):
         st.session_state.logged_in = False
         st.rerun()
