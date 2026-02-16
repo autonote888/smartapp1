@@ -18,12 +18,21 @@ except:
     st.error("Koneksi database gagal.")
     st.stop()
 
-# --- 3. CSS PROFESSIONAL UI + NEW FEATURES ---
+# --- 3. CSS POLESAN PROFESIONAL & ANTI-DARK MODE ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
 
-    .stApp { background-color: #f8fafc !important; }
+    /* FIX: MEMAKSA BROWSER HP TETAP LIGHT MODE */
+    :root {
+        color-scheme: light !important;
+    }
+
+    .stApp { 
+        background-color: #f8fafc !important; 
+        color: #1e293b !important;
+    }
+
     header {visibility: hidden;}
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
@@ -42,18 +51,24 @@ st.markdown("""
     .jitu-text { font-size: 36px; font-weight: 800; color: #0f172a; letter-spacing: -1px; }
     .presisi-text { font-size: 36px; font-weight: 200; color: #f59e0b; }
 
-    /* INPUT & SHADOW */
+    /* INPUT & SHADOW: Dipastikan background putih solid */
     div[data-baseweb="input"] {
         width: 100% !important;
         border-radius: 16px !important;
         border: 1px solid #e2e8f0 !important; 
-        background-color: #ffffff !important; 
+        background-color: #ffffff !important; /* WAJIB PUTIH */
         height: 60px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
         margin-bottom: 8px !important;
     }
 
-    /* LUPA PASSWORD LINK */
+    .stTextInput input {
+        color: #000000 !important; /* TEKS WAJIB HITAM */
+        font-weight: 500 !important;
+        background-color: transparent !important;
+    }
+
+    /* LUPA PASSWORD */
     .forgot-pw-container {
         text-align: right;
         margin-bottom: 25px;
@@ -64,7 +79,6 @@ st.markdown("""
         font-size: 13px;
         font-weight: 600;
         text-decoration: none;
-        font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     /* PRIMARY BUTTON */
@@ -79,19 +93,19 @@ st.markdown("""
         box-shadow: 0 10px 15px -3px rgba(29, 78, 216, 0.2) !important;
     }
 
-    /* SIGN UP FOOTER */
-    .signup-footer {
-        text-align: center;
-        margin-top: 30px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 14px;
-        color: #64748b;
-    }
-    .signup-link {
-        color: #1d4ed8;
-        font-weight: 700;
-        text-decoration: none;
-        cursor: pointer;
+    /* SOCIAL BUTTON */
+    .social-btn {
+        background-color: #ffffff !important;
+        border-radius: 16px;
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        border: 1px solid #e2e8f0;
+        color: #334155 !important;
+        font-weight: 600;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .divider {
@@ -109,39 +123,23 @@ st.markdown("""
         left: 0; top: 50%; z-index: -1;
     }
     .divider span { background: #f8fafc; padding: 0 15px; }
-
-    .social-btn {
-        background-color: #ffffff;
-        border-radius: 16px;
-        padding: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 12px;
-        border: 1px solid #e2e8f0;
-        color: #334155;
-        font-size: 14px;
-        font-weight: 600;
-    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. LOGIKA HALAMAN ---
+# --- 4. LOGIKA NAVIGASI ---
 if "page" not in st.session_state:
     st.session_state.page = "login"
 
-# --- HALALMAN LOGIN ---
 if st.session_state.page == "login":
     st.markdown("""
         <div class="header-container">
-            <span class="jitu-text">JITU</span><span class="presisi-text"> PRESISI</span><br>
+            <span class="jitu-text">JITU</span><span class="presisi-text"> PRESISI</span>
         </div>
     """, unsafe_allow_html=True)
 
     nip_u = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
     pas_u = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
 
-    # Tombol Lupa Password
     st.markdown('<div class="forgot-pw-container"><a href="#" class="forgot-pw-link">Lupa Password?</a></div>', unsafe_allow_html=True)
 
     if st.button("Masuk"):
@@ -149,37 +147,27 @@ if st.session_state.page == "login":
             try:
                 res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
-                    st.success("Login Berhasil!")
-                    # Logika redirect dashboard
+                    st.success("Berhasil!")
                 else:
-                    st.error("NIP atau Password salah.")
+                    st.error("Kredensial salah.")
             except:
-                st.error("Terjadi kendala jaringan.")
+                st.error("Gangguan server.")
 
     st.markdown('<div class="divider"><span>Atau</span></div>', unsafe_allow_html=True)
 
     st.markdown("""
         <div class="social-btn">
-            <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="20" style="margin-right:12px;"> Masuk dengan Google
+            <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="20" style="margin-right:12px;"> Akun Google
         </div>
     """, unsafe_allow_html=True)
 
-    # Tombol ke Sign Up
-    st.markdown('<div class="signup-footer">Belum punya akun? <span class="signup-link">Daftar Sekarang</span></div>', unsafe_allow_html=True)
-    if st.button("Pindah ke Halaman Daftar"):
+    # Tombol pindah halaman dengan tombol Streamlit asli (lebih stabil)
+    if st.button("Belum punya akun? Daftar"):
         st.session_state.page = "signup"
         st.rerun()
 
-# --- HALAMAN SIGN UP ---
 elif st.session_state.page == "signup":
-    st.markdown('<h2 style="text-align:center;">Buat Akun Baru</h2>', unsafe_allow_html=True)
-    new_name = st.text_input("Nama Lengkap")
-    new_nip = st.text_input("NRP / NIP")
-    new_pass = st.text_input("Password Baru", type="password")
-    
-    if st.button("Daftar"):
-        st.info("Fitur registrasi sedang diproses.")
-    
+    st.markdown("### Buat Akun")
     if st.button("Kembali ke Login"):
         st.session_state.page = "login"
         st.rerun()
