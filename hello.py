@@ -6,7 +6,7 @@ from datetime import datetime
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(page_title="JITU PRESISI", page_icon="💰", layout="centered")
 
-# Custom CSS untuk tampilan Mobile Minimalis (FIXED: unsafe_allow_html)
+# Custom CSS untuk tampilan Mobile Minimalis
 st.markdown("""
     <style>
     .main { background-color: #0f172a; }
@@ -41,7 +41,7 @@ try:
     KEY = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(URL, KEY)
 except Exception as e:
-    st.error("Konfigurasi API Key tidak ditemukan di Secrets Dashboard.")
+    st.error("Konfigurasi API Key tidak ditemukan. Pastikan sudah mengisi Secrets di Dashboard Streamlit.")
     st.stop()
 
 # --- 3. FUNGSI CETAK PDF ---
@@ -49,7 +49,7 @@ def generate_pdf(data):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Helvetica", "B", 16)
-    pdf.cell(0, 15, "JITU PRESISI MOBILE - SLIP GAJI", ln=True, align="C")
+    pdf.cell(0, 15, "JITU PRESISI MOBILE - SLIP GAJI DIGITAL", ln=True, align="C")
     pdf.ln(10)
     
     pdf.set_font("Helvetica", "", 12)
@@ -62,6 +62,7 @@ def generate_pdf(data):
     pdf.set_font("Helvetica", "B", 12)
     pdf.cell(0, 15, f"TOTAL TERIMA  : Rp {data['total']:,}", ln=True)
     
+    # Simpan ke memori bytes
     return pdf.output(dest='S').encode('latin-1')
 
 # --- 4. LOGIKA APLIKASI ---
@@ -69,44 +70,45 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # HALAMAN LOGIN
+    # --- HALAMAN LOGIN ---
     st.markdown("<h1 style='text-align: center; color: #3b82f6;'>JITU PRESISI</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #64748b;'>Mobile Payroll Management</p>", unsafe_allow_html=True)
     
     with st.container():
-        email = st.text_input("Email Dinas", placeholder="Contoh: mikrotiklapan1@gmail.com")
-        password = st.text_input("Password", type="password")
+        email_input = st.text_input("Email Dinas", placeholder="Contoh: mikrotiklapan1@gmail.com")
+        password_input = st.text_input("Password", type="password")
         
         if st.button("MASUK SEKARANG"):
             try:
-                auth = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                auth = supabase.auth.sign_in_with_password({"email": email_input, "password": password_input})
                 if auth.user:
                     st.session_state.logged_in = True
-                    st.session_state.user_email = email
+                    st.session_state.user_email = email_input
                     st.rerun()
-            except:
-                st.error("Akses Ditolak. Periksa kembali email dan password.")
+            except Exception as e:
+                st.error("Akses Ditolak. Pastikan Email/Password benar dan sudah terdaftar di Supabase Auth.")
 
 else:
-    # HALAMAN DASHBOARD
+    # --- HALAMAN DASHBOARD ---
     try:
-        # Ambil Profil Pegawai
-        pegawai = supabase.table("pegawai").select("*").eq("email", st.session_state.user_email).single().execute()
-        if pegawai.data:
-            p = pegawai.data
+        # 1. Ambil Profil Pegawai (Cek keberadaan data)
+        res_pegawai = supabase.table("pegawai").select("*").eq("email", st.session_state.user_email).execute()
+        
+        if len(res_pegawai.data) > 0:
+            p = res_pegawai.data[0]
             
             st.markdown(f"### Selamat Datang,")
             st.markdown(f"<h2 style='color: #3b82f6; margin-top:-15px;'>{p['nama_lengkap']}</h2>", unsafe_allow_html=True)
             st.caption(f"NIP: {p['nip']} | {p['jabatan']}")
             
-            # Ambil Data Payroll
-            payroll = supabase.table("payroll").select("*").eq("pegawai_id", p['id']).order("created_at", desc=True).limit(1).execute()
+            # 2. Ambil Data Payroll Terbaru
+            res_payroll = supabase.table("payroll").select("*").eq("pegawai_id", p['id']).order("created_at", desc=True).limit(1).execute()
             
-            if payroll.data:
-                pay = payroll.data[0]
+            if len(res_payroll.data) > 0:
+                pay = res_payroll.data[0]
                 
                 st.write("---")
-                # Tampilan Card Gaji
+                # Tampilan Kartu Gaji Android Style
                 st.markdown(f"""
                 <div class="metric-container">
                     <small style='color: #94a3b8;'>Gaji Pokok</small><br>
@@ -122,8 +124,8 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Tombol Download PDF
-                pdf_data = {
+                # Persiapan Tombol Download
+                pdf_payload = {
                     "nama": p['nama_lengkap'],
                     "nip": p['nip'],
                     "gaji": int(pay['nominal_gaji_pokok']),
@@ -131,7 +133,7 @@ else:
                     "total": int(pay['total_diterima'])
                 }
                 
-                pdf_bytes = generate_pdf(pdf_data)
+                pdf_bytes = generate_pdf(pdf_payload)
                 
                 st.download_button(
                     label="📄 UNDUH SLIP GAJI (PDF)",
@@ -139,10 +141,17 @@ else:
                     file_name=f"Slip_Gaji_{p['nama_lengkap'].replace(' ', '_')}.pdf",
                     mime="application/pdf"
                 )
+            else:
+                st.warning(f"Data riwayat gaji untuk akun {p['nama_lengkap']} belum tersedia di tabel payroll.")
+                
+        else:
+            st.error(f"Profil dengan email '{st.session_state.user_email}' belum terdaftar di tabel 'pegawai'.")
+            st.info("Silakan masukkan data profil Anda terlebih dahulu melalui SQL Editor di Supabase.")
 
-            if st.button("Keluar Sistem"):
-                st.session_state.logged_in = False
-                st.rerun()
+        st.write("---")
+        if st.button("Logout / Keluar"):
+            st.session_state.logged_in = False
+            st.rerun()
 
     except Exception as e:
-        st.error(f"Data tidak ditemukan atau error database: {e}")
+        st.error(f"Terjadi kesalahan sistem: {e}")
