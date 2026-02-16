@@ -18,12 +18,11 @@ except:
     st.error("Koneksi database gagal.")
     st.stop()
 
-# --- 3. CSS PERBAIKAN: MATCHING & KONTRAS ---
+# --- 3. CSS CUSTOM: SNOW WHITE & LOGO STYLING ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;800&display=swap');
 
-    /* Background Utama Putih Salju */
     .stApp {
         background-color: #FFFAFA !important; 
     }
@@ -33,35 +32,22 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
 
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1rem !important;
         max-width: 450px !important;
     }
 
-    /* FIX INPUT: WARNA MATCHING BACKGROUND */
-    div[data-baseweb="input"] {
-        width: 100% !important;
-        border-radius: 100px !important;
-        border: 1px solid #e2e8f0 !important; /* Garis tipis halus agar matching */
-        background-color: #f8fafc !important; /* Abu-abu sangat muda agar menyatu */
-        height: 55px !important;
+    /* Container untuk Logo Gambar */
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    .logo-img {
+        width: 80px; /* Bapak bisa sesuaikan ukurannya di sini */
+        height: auto;
     }
 
-    /* TEKS INPUT: HITAM PEKAT AGAR KONTRAS */
-    .stTextInput input {
-        color: #000000 !important; /* Hitam pekat sesuai permintaan */
-        font-weight: 500 !important;
-        background-color: transparent !important;
-        height: 55px !important;
-        padding: 0 25px !important;
-    }
-
-    /* Ikon Mata Password */
-    button[title="Show password"] {
-        margin-right: 15px !important;
-        color: #64748b !important;
-    }
-
-    /* HEADER STYLING */
+    /* Header Text Styling */
     .header-container {
         text-align: center;
         margin-bottom: 30px;
@@ -71,14 +57,23 @@ st.markdown("""
     .presisi-text { font-size: 32px; font-weight: 200; color: #FF8C00; }
     .mobile-text { display: block; font-size: 14px; color: #94a3b8; letter-spacing: 4px; margin-top: -5px; }
 
-    .logo-box {
-        width: 60px; height: 60px; background: #ffffff; border: 1px solid #e2e8f0;
-        border-radius: 15px; display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 15px auto; font-size: 30px; font-weight: bold; color: #001f3f;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    /* Input Field Styling */
+    div[data-baseweb="input"] {
+        width: 100% !important;
+        border-radius: 100px !important;
+        border: 1px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
+        height: 55px !important;
     }
 
-    /* FIX TOMBOL LOGIN: TIDAK KEPOTONG */
+    .stTextInput input {
+        color: #000000 !important;
+        font-weight: 500 !important;
+        background-color: transparent !important;
+        padding: 0 25px !important;
+    }
+
+    /* Tombol Login Gradasi */
     div.stButton > button {
         width: 100% !important; 
         border-radius: 100px !important;
@@ -88,7 +83,6 @@ st.markdown("""
         font-weight: 700 !important;
         border: none !important;
         margin-top: 20px !important;
-        display: block !important;
     }
 
     /* Social Buttons */
@@ -107,7 +101,17 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    st.markdown('<div class="logo-box">J</div>', unsafe_allow_html=True)
+    # --- MENAMPILKAN LOGO jitu.png ---
+    try:
+        # Menampilkan logo di tengah menggunakan container CSS
+        st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+        st.image("jitu.png", width=80)
+        st.markdown('</div>', unsafe_allow_html=True)
+    except:
+        # Jika file jitu.png belum ada di folder, tampilkan placeholder huruf J
+        st.markdown('<div style="text-align:center; font-size:40px; font-weight:bold; color:#001f3f;">J</div>', unsafe_allow_html=True)
+
+    # Header Teks
     st.markdown("""
         <div class="header-container">
             <span class="jitu-text">JITU</span><span class="presisi-text"> PRESISI</span>
@@ -129,8 +133,9 @@ if not st.session_state.logged_in:
                 else:
                     st.error("NIP atau Password salah!")
             except Exception as e:
-                st.error("Gagal Login. Periksa koneksi.")
+                st.error("Gagal Login. Periksa Database.")
 
+    # Footer Social Login
     st.markdown("""
         <div class="social-container">
             <div class="social-btn"><img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="18" style="margin-right:8px;"> Google</div>
