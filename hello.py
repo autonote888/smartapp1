@@ -9,32 +9,34 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS UNTUK MENGHILANGKAN TOOLBAR & FOOTER ---
+# --- 2. KONEKSI DATABASE ---
+try:
+    URL = st.secrets["SUPABASE_URL"]
+    KEY = st.secrets["SUPABASE_KEY"]
+    supabase: Client = create_client(URL, KEY)
+except:
+    st.error("Gagal terhubung ke database. Cek Secrets di Streamlit Cloud.")
+    st.stop()
+
+# --- 3. CSS "FULL SCREEN" & ANDROID UI ---
 st.markdown("""
     <style>
-    /* Menghilangkan Toolbar Atas (Garis Hitam) */
+    /* Menghilangkan Toolbar Streamlit (Garis Hitam & Footer) */
     header {visibility: hidden;}
-    
-    /* Menghilangkan Footer Bawah (Made with Streamlit) */
     footer {visibility: hidden;}
-    
-    /* Menghilangkan Menu di Pojok Kanan Atas */
     #MainMenu {visibility: hidden;}
 
-    /* Memaksa background putih bersih */
-    .stApp {
-        background-color: #ffffff !important;
-    }
+    /* Background Putih Bersih */
+    .stApp { background-color: #ffffff !important; }
     
-    /* Mengatur padding agar konten menempel ke atas setelah header hilang */
+    /* Padding Konten */
     .block-container { 
-        padding-top: 1rem !important; 
+        padding-top: 2rem !important; 
         max-width: 450px !important;
     }
 
-    /* --- STYLING UI (SAMA SEPERTI GAMBAR REFERENSI) --- */
+    /* Logo & Teks Styling */
     .main-container { text-align: center; font-family: 'sans-serif'; }
-    
     .logo-text {
         font-size: 26px;
         font-weight: 800;
@@ -55,14 +57,16 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Input Field Melengkung Sempurna */
+    /* Input Fields (Rounded) */
     .stTextInput input {
         border-radius: 30px !important;
         padding: 25px 20px !important;
         border: 1px solid #e2e8f0 !important;
+        background-color: #ffffff !important;
+        color: #1e293b !important;
     }
     
-    /* Tombol Navy Bulat */
+    /* Tombol Navy */
     div.stButton > button {
         width: 100%;
         border-radius: 30px;
@@ -72,6 +76,7 @@ st.markdown("""
         font-weight: bold;
         font-size: 16px;
         border: none;
+        margin-top: 10px;
     }
 
     .divider {
@@ -90,12 +95,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LOGIKA LOGIN ---
+# --- 4. LOGIKA NAVIGASI ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # TAMPILAN HEADER (LOGO & TEKS)
+    # --- TAMPILAN LOGIN SCREEN ---
     st.markdown("""
         <div class="main-container">
             <div style="text-align: right; color: #002855; font-weight: bold; margin-bottom: 20px;">EN | ID</div>
@@ -107,24 +112,51 @@ if not st.session_state.logged_in:
         </div>
     """, unsafe_allow_html=True)
 
-    # Form Login (NIP & Password)
-    nip = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
-    pwd = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
+    # Form Input (Menggunakan label_visibility untuk tampilan bersih)
+    nip_input = st.text_input("NIP", placeholder="NRP / NIP", label_visibility="collapsed")
+    pwd_input = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
 
-    # Link Lupa
     st.markdown('<div style="text-align: right; margin-bottom: 20px;"><a href="#" style="color:#002855; font-weight:bold; text-decoration:none; font-size:14px;">Lupa?</a></div>', unsafe_allow_html=True)
 
     if st.button("MASUK"):
-        # Login Logic Bapak di sini
-        st.success("Mencoba Masuk...")
+        if nip_input and pwd_input:
+            try:
+                # Cek ke tabel pegawai (Mencocokkan email/nip dan password)
+                res = supabase.table("pegawai").select("*").eq("email", nip_input).eq("password", pwd_input).execute()
+                
+                if len(res.data) > 0:
+                    st.session_state.user_info = res.data[0]
+                    st.session_state.logged_in = True
+                    st.rerun()
+                else:
+                    st.error("NIP atau Password salah!")
+            except Exception as e:
+                st.error(f"Error Database: {e}")
+        else:
+            st.warning("Harap isi NIP dan Password.")
 
-    # Footer Login
+    # Footer Aksesoris
     st.markdown("""
         <div class="divider"><span>atau</span></div>
         <div style="text-align:center;">
-            <button style="width:100%; border-radius:30px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500;">
+            <button style="width:100%; border-radius:30px; padding:12px; border:1px solid #e2e8f0; background:white; font-weight:500; cursor:pointer;">
                 <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="18" style="vertical-align:middle; margin-right:10px;"> Google
             </button>
             <p style="margin-top:30px; color:#64748b; font-size:14px;">Baru? <b style="color:#002855;">Daftar</b></p>
         </div>
     """, unsafe_allow_html=True)
+
+else:
+    # --- TAMPILAN DASHBOARD (SETELAH LOGIN) ---
+    u = st.session_state.user_info
+    st.markdown(f"""
+        <div class="main-container">
+            <h2 style="color:#002855;">Selamat Datang,</h2>
+            <h3>{u['nama_lengkap']}</h3>
+            <hr>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("Logout"):
+        st.session_state.logged_in = False
+        st.rerun()
