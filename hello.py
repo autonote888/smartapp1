@@ -2,12 +2,11 @@ import streamlit as st
 from supabase import create_client, Client
 from fpdf import FPDF
 from datetime import datetime
-import threading
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(page_title="JITU PRESISI", page_icon="💰", layout="centered")
 
-# Custom CSS untuk tampilan Mobile Minimalis
+# Custom CSS untuk tampilan Mobile Minimalis (FIXED: unsafe_allow_html)
 st.markdown("""
     <style>
     .main { background-color: #0f172a; }
@@ -33,17 +32,16 @@ st.markdown("""
         border-left: 5px solid #3b82f6;
     }
     </style>
-    """, unsafe_allow_value=True)
+    """, unsafe_allow_html=True)
 
-# --- 2. KONEKSI SUPABASE (KEAMANAN TINGGI) ---
-# Koding ini TIDAK menampilkan Key. 
-# Key diambil dari st.secrets (File secrets.toml atau Dashboard Streamlit)
+# --- 2. KONEKSI SUPABASE ---
+# Mengambil dari Streamlit Secrets (Aman dari kebocoran Key)
 try:
     URL = st.secrets["SUPABASE_URL"]
     KEY = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(URL, KEY)
 except Exception as e:
-    st.error("Konfigurasi API Key tidak ditemukan. Pastikan Secrets sudah diatur.")
+    st.error("Konfigurasi API Key tidak ditemukan di Secrets Dashboard.")
     st.stop()
 
 # --- 3. FUNGSI CETAK PDF ---
@@ -66,14 +64,14 @@ def generate_pdf(data):
     
     return pdf.output(dest='S').encode('latin-1')
 
-# --- 4. LOGIKA LOGIN & DASHBOARD ---
+# --- 4. LOGIKA APLIKASI ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    # --- TAMPILAN LOGIN ---
-    st.markdown("<h1 style='text-align: center; color: #3b82f6;'>JITU PRESISI</h1>", unsafe_allow_value=True)
-    st.markdown("<p style='text-align: center; color: #64748b;'>Mobile Payroll Management</p>", unsafe_allow_value=True)
+    # HALAMAN LOGIN
+    st.markdown("<h1 style='text-align: center; color: #3b82f6;'>JITU PRESISI</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #64748b;'>Mobile Payroll Management</p>", unsafe_allow_html=True)
     
     with st.container():
         email = st.text_input("Email Dinas", placeholder="Contoh: mikrotiklapan1@gmail.com")
@@ -90,16 +88,15 @@ if not st.session_state.logged_in:
                 st.error("Akses Ditolak. Periksa kembali email dan password.")
 
 else:
-    # --- TAMPILAN DASHBOARD ---
+    # HALAMAN DASHBOARD
     try:
-        # Ambil Profil Yusuf Hambali
+        # Ambil Profil Pegawai
         pegawai = supabase.table("pegawai").select("*").eq("email", st.session_state.user_email).single().execute()
         if pegawai.data:
             p = pegawai.data
             
-            # Header
             st.markdown(f"### Selamat Datang,")
-            st.markdown(f"<h2 style='color: #3b82f6; margin-top:-15px;'>{p['nama_lengkap']}</h2>", unsafe_allow_value=True)
+            st.markdown(f"<h2 style='color: #3b82f6; margin-top:-15px;'>{p['nama_lengkap']}</h2>", unsafe_allow_html=True)
             st.caption(f"NIP: {p['nip']} | {p['jabatan']}")
             
             # Ambil Data Payroll
@@ -109,11 +106,11 @@ else:
                 pay = payroll.data[0]
                 
                 st.write("---")
-                # Kartu Penghasilan Android-Style
+                # Tampilan Card Gaji
                 st.markdown(f"""
                 <div class="metric-container">
                     <small style='color: #94a3b8;'>Gaji Pokok</small><br>
-                    <b style='font-size: 20px;'>Rp {int(pay['nominal_gaji_pokok']):,}</b>
+                    <b style='font-size: 20px; color: #f8fafc;'>Rp {int(pay['nominal_gaji_pokok']):,}</b>
                 </div>
                 <div class="metric-container" style="border-left-color: #60a5fa;">
                     <small style='color: #94a3b8;'>Tunjangan Kinerja</small><br>
@@ -123,9 +120,9 @@ else:
                     <small style='color: #94a3b8;'>Total Diterima</small><br>
                     <b style='font-size: 24px; color: #10b981;'>Rp {int(pay['total_diterima']):,}</b>
                 </div>
-                """, unsafe_allow_value=True)
+                """, unsafe_allow_html=True)
 
-                # Persiapan PDF
+                # Tombol Download PDF
                 pdf_data = {
                     "nama": p['nama_lengkap'],
                     "nip": p['nip'],
@@ -148,4 +145,4 @@ else:
                 st.rerun()
 
     except Exception as e:
-        st.error("Gagal memuat data. Pastikan tabel di Supabase sudah benar.")
+        st.error(f"Data tidak ditemukan atau error database: {e}")
