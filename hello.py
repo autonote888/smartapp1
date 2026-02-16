@@ -19,14 +19,14 @@ except:
     st.error("Koneksi database gagal. Cek Secrets.")
     st.stop()
 
-# --- 3. CSS: GLASSMORPHISM & HEADER CUSTOM ---
+# --- 3. CSS: SNOW WHITE BACKGROUND & CUSTOM HEADER ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;800&display=swap');
 
+    /* 1. Background Putih Salju */
     .stApp {
-        background: radial-gradient(circle at top right, #2e1065, #0f172a) !important;
-        background-attachment: fixed;
+        background-color: #FFFAFA !important; /* Snow White */
     }
 
     header {visibility: hidden;}
@@ -38,7 +38,7 @@ st.markdown("""
         max-width: 450px !important;
     }
 
-    /* --- HEADER STYLING SESUAI INSTRUKSI --- */
+    /* --- HEADER STYLING --- */
     .header-container {
         text-align: center;
         margin-bottom: 30px;
@@ -46,13 +46,13 @@ st.markdown("""
     }
     .jitu-text {
         font-size: 32px;
-        font-weight: 800; /* Font Tebal */
+        font-weight: 800; /* Tebal */
         color: #001f3f; /* Dongker Gelap */
         letter-spacing: 1px;
     }
     .presisi-text {
         font-size: 32px;
-        font-weight: 200; /* Font Tipis */
+        font-weight: 200; /* Tipis */
         color: #FF8C00; /* Orange */
         letter-spacing: 1px;
     }
@@ -60,7 +60,7 @@ st.markdown("""
         display: block;
         font-size: 14px;
         font-weight: 400;
-        color: rgba(255, 255, 255, 0.6);
+        color: #64748b; /* Abu-abu Gelap agar terlihat di background putih */
         letter-spacing: 4px;
         margin-top: -5px;
         text-transform: uppercase;
@@ -68,46 +68,68 @@ st.markdown("""
 
     .logo-box {
         width: 60px; height: 60px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 15px;
         display: flex; align-items: center; justify-content: center;
         margin: 0 auto 15px auto;
-        font-size: 30px; font-weight: bold; color: white;
+        font-size: 30px; font-weight: bold; color: #001f3f;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-    /* Input & Button Styling */
+    /* 4. Input Field (Pill-Shaped Polos) */
     .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 15px !important;
-        color: white !important;
+        background-color: #f1f5f9 !important; /* Abu-abu sangat muda */
+        border: none !important;
+        border-radius: 100px !important;
+        color: #1e293b !important;
         height: 55px !important;
+        padding: 0 25px !important;
     }
 
+    /* 5. Tombol Login Sunset */
     div.stButton > button {
-        width: 100% !important; border-radius: 50px !important;
+        width: 100% !important; 
+        border-radius: 100px !important;
         height: 55px !important;
         background: linear-gradient(90deg, #a5b4fc 0%, #fdba74 100%) !important;
-        color: #1e293b !important; font-weight: 700 !important;
+        color: #1e293b !important; 
+        font-weight: 700 !important;
         border: none !important;
+        margin-top: 15px !important;
     }
 
+    /* 6. Card Dashboard (Light Glass) */
     .data-card {
-        background: rgba(255, 255, 255, 0.07);
-        backdrop-filter: blur(15px);
-        border-radius: 20px; padding: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 15px; color: white;
+        background: #ffffff;
+        border-radius: 20px; 
+        padding: 20px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 15px; 
+        color: #1e293b;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
 
-    .social-container { display: flex; gap: 15px; justify-content: center; margin-top: 20px;}
+    .divider {
+        display: flex; align-items: center; text-align: center;
+        color: #94a3b8; margin: 25px 0;
+    }
+    .divider::before, .divider::after {
+        content: ''; flex: 1; border-bottom: 1px solid #e2e8f0;
+    }
+    .divider span { padding: 0 10px; font-size: 14px; }
+
+    /* 7. Social Buttons */
+    .social-container { display: flex; gap: 15px; justify-content: center; }
     .social-btn {
-        flex: 1; background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px; padding: 12px;
-        text-align: center; color: white; font-size: 14px;
+        flex: 1; 
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px; 
+        padding: 12px;
+        text-align: center; 
+        color: #1e293b; 
+        font-size: 14px;
         display: flex; align-items: center; justify-content: center;
     }
     </style>
@@ -121,7 +143,6 @@ if not st.session_state.logged_in:
     # --- UI LOGIN ---
     st.markdown('<div class="logo-box">J</div>', unsafe_allow_html=True)
     
-    # Header sesuai permintaan Bapak
     st.markdown("""
         <div class="header-container">
             <span class="jitu-text">JITU</span><span class="presisi-text"> PRESISI</span>
@@ -129,13 +150,13 @@ if not st.session_state.logged_in:
         </div>
     """, unsafe_allow_html=True)
 
-    nip_u = st.text_input("Email / NRP", placeholder="Enter your ID", label_visibility="collapsed")
+    nip_u = st.text_input("NIP", placeholder="Enter your NRP / NIP", label_visibility="collapsed")
     pas_u = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
 
     if st.button("Log In"):
         if nip_u and pas_u:
             try:
-                # Cek tabel pegawai di Supabase
+                # Cek ke tabel pegawai
                 res = supabase.table("pegawai").select("*").eq("email", nip_u).eq("password", pas_u).execute()
                 if len(res.data) > 0:
                     st.session_state.user_info = res.data[0]
@@ -146,21 +167,22 @@ if not st.session_state.logged_in:
             except Exception as e:
                 st.error(f"Error: {e}")
 
-    # Social Login
+    st.markdown('<div class="divider"><span>Or</span></div>', unsafe_allow_html=True)
+    
     st.markdown("""
         <div class="social-container">
             <div class="social-btn">
                 <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" width="18" style="margin-right:8px;"> Google
             </div>
             <div class="social-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" width="16" style="margin-right:8px; filter: brightness(0) invert(1);"> Apple
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" width="16" style="margin-right:8px;"> Apple
             </div>
         </div>
     """, unsafe_allow_html=True)
 else:
     # --- DASHBOARD SETELAH LOGIN ---
     u = st.session_state.user_info
-    st.markdown(f"<h2 style='color:white; text-align:center;'>Halo, {u['nama_lengkap']}</h2>", unsafe_allow_html=True)
+    st.markdown(f"### Selamat Datang, {u['nama_lengkap']}")
     
     try:
         # Menampilkan data tunkin
@@ -170,7 +192,7 @@ else:
             st.markdown(f'<div class="data-card"><small>Gaji Pokok</small><h3>Rp {d["gaji_pokok"]:,.0f}</h3></div>', unsafe_allow_html=True)
             st.markdown(f'<div class="data-card"><small>Tunjangan Kinerja</small><h3>Rp {d["jumlah_tunkin"]:,.0f}</h3></div>', unsafe_allow_html=True)
     except:
-        st.error("Data tidak ditemukan.")
+        st.error("Data penghasilan tidak ditemukan.")
 
     if st.button("Log Out"):
         st.session_state.logged_in = False
